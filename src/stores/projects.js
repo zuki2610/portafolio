@@ -774,6 +774,7 @@ export const useProjectsStore = defineStore('projects', {
     
     /**
      * Obtiene solo los proyectos destacados (featured)
+     * GETTER COMPUESTO: Filtra y retorna proyectos destacados
      * @returns {Array} Proyectos con featured: true
      */
     getFeaturedProjects: (state) => {
@@ -791,11 +792,54 @@ export const useProjectsStore = defineStore('projects', {
     
     /**
      * Obtiene proyectos por categoría
+     * GETTER COMPUESTO: Filtra proyectos por categoría específica
      * @param {string} category - Categoría a filtrar
      * @returns {Array} Proyectos de la categoría especificada
      */
     getProjectsByCategory: (state) => {
       return (category) => state.projects.filter(project => project.category === category)
+    },
+    
+    /**
+     * GETTER COMPUESTO: Cuenta total de proyectos
+     * @returns {number} Total de proyectos
+     */
+    getTotalProjectsCount: (state) => state.projects.length,
+    
+    /**
+     * GETTER COMPUESTO: Cuenta proyectos por categoría
+     * @returns {Object} Objeto con conteo de proyectos por categoría
+     */
+    getProjectsCountByCategory: (state) => {
+      const countByCategory = {}
+      state.projects.forEach(project => {
+        const { category } = project
+        countByCategory[category] = (countByCategory[category] || 0) + 1
+      })
+      return countByCategory
+    },
+    
+    /**
+     * GETTER COMPUESTO: Obtiene todas las categorías únicas
+     * @returns {Array} Array de categorías únicas
+     */
+    getAllCategories: (state) => {
+      return [...new Set(state.projects.map(project => project.category))]
+    },
+    
+    /**
+     * GETTER COMPUESTO: Verifica si hay proyectos cargados
+     * @returns {boolean} True si hay proyectos
+     */
+    hasProjects: (state) => state.projects.length > 0,
+    
+    /**
+     * GETTER COMPUESTO: Obtiene proyectos recientes (últimos N)
+     * @param {number} limit - Número de proyectos a retornar
+     * @returns {Array} Proyectos más recientes
+     */
+    getRecentProjects: (state) => {
+      return (limit = 3) => state.projects.slice(0, limit)
     }
   },
   
