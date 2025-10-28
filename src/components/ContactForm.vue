@@ -131,8 +131,14 @@ export default {
   methods: {
     /**
      * Maneja el envío del formulario
+     * BUENA PRÁCTICA: Validaciones completas antes de envío
      */
     async handleSubmit() {
+      // Validar formulario antes de enviar
+      if (!this.validateForm()) {
+        return
+      }
+      
       this.isSubmitting = true
       this.submitMessage = ''
       
@@ -198,6 +204,45 @@ export default {
      */
     clearMessage() {
       this.submitMessage = ''
+    },
+    /**
+     * Valida el formulario antes de enviar
+     * BUENA PRÁCTICA: Validación completa de datos
+     * @returns {boolean} True si el formulario es válido
+     */
+    validateForm() {
+      const { name, email, subject, message } = this.formData
+      
+      // Validar nombre
+      if (!name || name.trim().length < 2) {
+        this.submitMessage = 'El nombre debe tener al menos 2 caracteres'
+        this.submitSuccess = false
+        return false
+      }
+      
+      // Validar email con regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!email || !emailRegex.test(email)) {
+        this.submitMessage = 'Por favor, ingresa un email válido'
+        this.submitSuccess = false
+        return false
+      }
+      
+      // Validar asunto
+      if (!subject || subject.trim().length < 5) {
+        this.submitMessage = 'El asunto debe tener al menos 5 caracteres'
+        this.submitSuccess = false
+        return false
+      }
+      
+      // Validar mensaje
+      if (!message || message.trim().length < 10) {
+        this.submitMessage = 'El mensaje debe tener al menos 10 caracteres'
+        this.submitSuccess = false
+        return false
+      }
+      
+      return true
     }
   },
   emits: ['submitted', 'error']
