@@ -73,25 +73,43 @@ export default {
     store() {
       return useProjectsStore()
     },
+    /**
+     * Obtiene el estado de carga del store
+     * Usa destructuring de propiedades (ES6)
+     */
     isLoading() {
-      return this.store.loading
+      const { loading } = this.store
+      return loading
     },
+    /**
+     * Obtiene todos los proyectos del store
+     * Usa destructuring y template literals (ES6)
+     */
     projects() {
-      // Obtener todos los proyectos desde el store
-      console.log('Projects data:', this.store.getAllProjects)
-      return this.store.getAllProjects
+      const { getAllProjects } = this.store
+      return getAllProjects
     },
+    /**
+     * Calcula categorías únicas usando Set y spread operator (ES6)
+     * @returns {Array} Array de categorías únicas con 'Todos'
+     */
     categories() {
-      // Extraer categorías únicas de los proyectos y agregar 'Todos'
-      const allCategories = ['Todos', ...new Set(this.projects.map(project => project.category))]
-      return allCategories
+      const { projects } = this
+      const uniqueCategories = [...new Set(projects.map(({ category }) => category))]
+      return ['Todos', ...uniqueCategories]
     },
+    /**
+     * Filtra proyectos según categoría seleccionada
+     * Usa destructuring de parámetros en filter callback (ES6)
+     */
     filteredProjects() {
-      if (this.selectedCategory === 'Todos') {
-        return this.projects
+      const { selectedCategory, projects } = this
+      
+      if (selectedCategory === 'Todos') {
+        return projects
       }
-      // Filtrar proyectos que coincidan con la categoría seleccionada
-      return this.projects.filter(project => project.category === this.selectedCategory)
+      
+      return projects.filter(({ category }) => category === selectedCategory)
     }
   },
   created() {
@@ -114,19 +132,39 @@ export default {
      * @param {string} category - Categoría a filtrar ('Todos' o específica)
      */
     filterByCategory(category) {
+      // ES6: Assignment directo usando destructuring implícito
       this.selectedCategory = category
     },
     /**
      * Maneja la selección de un proyecto (evento emitido por ProjectCard)
-     * @param {Object} project - Proyecto seleccionado
+     * Usa destructuring avanzado de parámetros (ES6)
+     * @param {Object} project - Proyecto con { id, title, category, ... }
      */
     handleProjectSelection(project) {
-      // Destructuring del proyecto
-      const { id, title, category } = project
+      // Destructuring con default values y alias (ES6 avanzado)
+      const { 
+        id, 
+        title, 
+        category,
+        description = 'Sin descripción disponible',
+        technologies = []
+      } = project
       
-      // Aquí puedes agregar lógica adicional cuando se selecciona un proyecto
-      console.log('Proyecto seleccionado:', { id, title, category })
-      // Ejemplo: tracking, analytics, etc.
+      // Template literals para logging (ES6)
+      console.log(`Proyecto seleccionado: ${title} en categoría ${category}`)
+      
+      // Crear objeto con spread operator (ES6)
+      const trackingData = {
+        projectId: id,
+        title,
+        category,
+        description,
+        technologies,
+        timestamp: new Date().toISOString(),
+        ...project
+      }
+      
+      console.log('Datos de tracking:', trackingData)
     }
   }
 }

@@ -7,8 +7,8 @@
       :class="[
         'px-6 py-3 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-odoo-purple',
         selectedCategory === category 
-          ? 'bg-odoo-purple text-white shadow-lg neon-glow' 
-          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+          ? 'bg-odoo-purple text-white shadow-lg neon-glow font-semibold scale-105' 
+          : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white hover:scale-105 active:scale-95'
       ]"
       :aria-label="`Filtrar por categoría ${category}`"
       :aria-pressed="selectedCategory === category"

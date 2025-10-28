@@ -48,7 +48,9 @@
               <div class="grid grid-cols-3 gap-4">
                 <div v-for="(tech, index) in featuredTechnologies" :key="tech.name"
                      class="p-4 bg-odoo-purple/30 rounded-lg text-center 
-                            hover:bg-odoo-purple/50 transition-all duration-300"
+                            hover:bg-odoo-purple/50 hover:scale-105 
+                            active:scale-95 active:bg-odoo-purple/70
+                            transition-all duration-300 cursor-pointer"
                      :style="{ animationDelay: `${index * 0.1}s` }"
                 >
                   <div class="text-3xl mb-2">{{ tech.icon }}</div>
@@ -134,35 +136,47 @@ export default {
   computed: {
     isLoading() {
       const store = useProjectsStore()
-      return store.loading
+      // Destructuring del loading state
+      const { loading } = store
+      return loading
     },
     featuredProjects() {
       const store = useProjectsStore()
-      return store.getFeaturedProjects
+      // Destructuring del getter
+      const { getFeaturedProjects } = store
+      return getFeaturedProjects
     }
   },
   created() {
-    // Inicializar datos antes de montar
-    // Destructuring para obtener tecnologías
+    // Destructuring de data para inicializar
     const { featuredTechnologies } = this
-    console.log('Home view creada con', featuredTechnologies.length, 'tecnologías destacadas')
+    console.log(`Home view creada con ${featuredTechnologies.length} tecnologías destacadas`)
   },
   mounted() {
-    // Lógica después de montar
     console.log('Home view montada')
   },
   beforeUnmount() {
-    // Limpieza antes de desmontar
     console.log('Home view desmontando')
   },
   methods: {
     /**
      * Maneja la selección de un proyecto destacado
-     * @param {Object} project - Proyecto seleccionado
+     * Usa destructuring de parámetros (ES6 advanced)
+     * @param {Object} project - Proyecto seleccionado con propiedades { id, title, category, ... }
      */
-    handleProjectSelection(project) {
-      console.log('Proyecto destacado seleccionado:', project.title)
-      // Aquí puedes agregar tracking, analytics, etc.
+    handleProjectSelection({ id, title, category, featured = false }) {
+      // Destructuring completo del objeto project
+      console.log(`Proyecto destacado seleccionado: ${title} (${category})`)
+      
+      // Tracking con spread operator (ES6)
+      const trackingData = {
+        projectId: id,
+        category,
+        featured,
+        timestamp: new Date().toISOString()
+      }
+      
+      console.log('Datos de tracking:', trackingData)
     }
   }
 }

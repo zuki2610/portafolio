@@ -22,7 +22,8 @@
             <router-link 
               :to="item.path" 
               class="navbar__link"
-              active-class="navbar__link--active text-odoo-light"
+              active-class="navbar__link--active text-odoo-light font-semibold"
+              exact-active-class="navbar__link--active navbar__link--exact text-odoo-light font-semibold"
               :aria-label="`Navegar a ${item.name}`"
             >
               {{ item.name }}
@@ -81,15 +82,36 @@ export default {
     this.isMenuOpen = false
   },
   methods: {
+    /**
+     * Toggle del menú móvil usando destructuring implícito
+     */
     toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen
+      // Destructuring del estado
+      const { isMenuOpen } = this
+      this.isMenuOpen = !isMenuOpen
     },
+    /**
+     * Cierra el menú móvil
+     */
     closeMenu() {
       this.isMenuOpen = false
+    },
+    /**
+     * Maneja el click en items del menú con destructuring
+     * @param {Object} item - Item del menú con { name, path }
+     */
+    handleMenuItemClick({ name, path }) {
+      console.log(`Navegando a ${name} (${path})`)
+      this.closeMenu()
     }
   },
   watch: {
-    $route() {
+    $route(to, from) {
+      // Destructuring del $route object
+      const { path: newPath } = to
+      const { path: oldPath } = from
+      
+      console.log(`Cambio de ruta: ${oldPath} → ${newPath}`)
       this.closeMenu()
     }
   }
@@ -108,12 +130,19 @@ export default {
 /* Modifier: navbar__link--hover (on hover state) */
 .navbar__link:hover {
   color: #A6839F;
+  transform: translateY(-1px);
 }
 
 /* Modifier: navbar__link--active (active route) */
 .navbar__link.navbar__link--active {
   color: #A6839F;
   font-weight: 600;
+}
+
+/* Modifier: navbar__link--exact (exact active route) */
+.navbar__link--exact {
+  border-bottom: 2px solid #A6839F;
+  padding-bottom: 4px;
 }
 </style>
 

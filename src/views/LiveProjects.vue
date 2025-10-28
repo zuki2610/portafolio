@@ -80,7 +80,10 @@
               <p class="text-gray-300 mb-4">{{ live.technologies.join(' • ') }}</p>
               <button 
                 @click.stop="openProject(live.url)"
-                class="bg-odoo-purple hover:bg-odoo-dark text-white px-6 py-3 rounded-lg transition-all duration-300 inline-flex items-center"
+                class="bg-odoo-purple hover:bg-odoo-dark text-white px-6 py-3 rounded-lg 
+                       transition-all duration-300 inline-flex items-center
+                       hover:scale-105 hover:shadow-lg hover:shadow-odoo-purple/50
+                       active:scale-95 active:shadow-md"
               >
                 Abrir Proyecto
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +123,15 @@ export default {
   },
   data() {
     return {
+      /**
+       * ESTADO INTERNO: Estado de carga de proyectos
+       * @type {boolean}
+       */
       isLoading: false,
+      /**
+       * ESTADO INTERNO: Lista de proyectos en vivo
+       * @type {Array<Object>}
+       */
       liveProjects: [
         {
           id: 'stark-industech',
@@ -165,6 +176,36 @@ export default {
       ]
     }
   },
+  computed: {
+    /**
+     * ESTADO INTERNO: Calcula la cantidad total de proyectos en vivo
+     * @returns {number} Cantidad de proyectos
+     */
+    totalProjects() {
+      return this.liveProjects.length
+    },
+    /**
+     * ESTADO INTERNO: Filtra proyectos con dark mode
+     * @returns {Array} Proyectos con darkMode true
+     */
+    darkModeProjects() {
+      return this.liveProjects.filter(({ darkMode }) => darkMode)
+    },
+    /**
+     * ESTADO INTERNO: Agrupa proyectos por modo (dark/light)
+     * @returns {Object} Objeto con proyectos separados por modo
+     */
+    projectsByMode() {
+      return this.liveProjects.reduce((acc, project) => {
+        const { darkMode } = project
+        const mode = darkMode ? 'dark' : 'light'
+        return {
+          ...acc,
+          [mode]: [...(acc[mode] || []), project]
+        }
+      }, {})
+    }
+  },
   created() {
     console.log('LiveProjects view creada')
   },
@@ -178,18 +219,40 @@ export default {
   methods: {
     /**
      * Carga proyectos en vivo (simulado)
+     * BUENA PRÁCTICA: Async/await con manejo de errores
      */
     async loadProjects() {
-      this.isLoading = true
-      
-      // Simular delay de carga
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      this.isLoading = false
-      console.log('Proyectos en vivo cargados')
+      try {
+        this.isLoading = true
+        
+        // Simular delay de carga
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        console.log(`Cargados ${this.totalProjects} proyectos en vivo`)
+      } catch (error) {
+        console.error('Error cargando proyectos en vivo:', error)
+        this.isLoading = false
+      } finally {
+        this.isLoading = false
+      }
     },
+    /**
+     * Abre un proyecto en nueva ventana
+     * BUENA PRÁCTICA: Función con destructuring y validación
+     * @param {string} url - URL del proyecto a abrir
+     */
     openProject(url) {
+      // Validación de URL (buena práctica)
+      if (!url || typeof url !== 'string') {
+        console.error('URL inválida:', url)
+        return
+      }
+      
+      // Abrir en nueva ventana con seguridad
       window.open(url, '_blank', 'noopener,noreferrer')
+      
+      // Tracking (buena práctica)
+      console.log(`Abriendo proyecto: ${url}`)
     }
   }
 }

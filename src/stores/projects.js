@@ -845,9 +845,9 @@ export const useProjectsStore = defineStore('projects', {
   
   actions: {
     /**
-     * Carga proyectos desde la API externa
-     * Si falla, mantiene los datos locales como fallback
-     * Implementa error handling robusto con diferentes tipos de errores
+     * Acción PRINCIPAL: Carga proyectos desde la API externa
+     * BUENA PRÁCTICA: Todo el manejo de datos está encapsulado en el store
+     * @returns {Promise<void>}
      */
     async loadProjects() {
       // Si ya está cargando, evitar llamadas duplicadas
@@ -974,10 +974,79 @@ export const useProjectsStore = defineStore('projects', {
     
     /**
      * Fuerza recarga de proyectos desde la API
+     * BUENA PRÁCTICA: Método de refresh explícito
      */
     async refreshProjects() {
       console.log('Refrescando proyectos desde la API...')
       await this.loadProjects()
+    },
+    
+    /**
+     * BUENA PRÁCTICA: CRUD Actions - Agregar un nuevo proyecto
+     * @param {Object} project - Proyecto a agregar
+     */
+    addProject(project) {
+      // Validar estructura
+      if (!project?.id || !project?.title) {
+        console.error('Proyecto inválido: falta id o title')
+        return false
+      }
+      
+      // Verificar duplicados
+      if (this.projects.some(p => p.id === project.id)) {
+        console.warn(`Proyecto con ID ${project.id} ya existe`)
+        return false
+      }
+      
+      // Agregar proyecto
+      this.projects.push(project)
+      console.log(`Proyecto ${project.title} agregado exitosamente`)
+      return true
+    },
+    
+    /**
+     * BUENA PRÁCTICA: CRUD Actions - Actualizar un proyecto existente
+     * @param {string} id - ID del proyecto
+     * @param {Object} updates - Campos a actualizar
+     */
+    updateProject(id, updates) {
+      const index = this.projects.findIndex(p => p.id === id)
+      
+      if (index === -1) {
+        console.warn(`No se encontró proyecto con ID: ${id}`)
+        return false
+      }
+      
+      // Actualizar proyecto manteniendo inmutabilidad
+      this.projects[index] = { ...this.projects[index], ...updates }
+      console.log(`Proyecto ${id} actualizado exitosamente`)
+      return true
+    },
+    
+    /**
+     * BUENA PRÁCTICA: CRUD Actions - Eliminar un proyecto
+     * @param {string} id - ID del proyecto a eliminar
+     */
+    deleteProject(id) {
+      const index = this.projects.findIndex(p => p.id === id)
+      
+      if (index === -1) {
+        console.warn(`No se encontró proyecto con ID: ${id}`)
+        return false
+      }
+      
+      this.projects.splice(index, 1)
+      console.log(`Proyecto ${id} eliminado exitosamente`)
+      return true
+    },
+    
+    /**
+     * BUENA PRÁCTICA: Helper - Resetea el store a valores iniciales
+     */
+    resetStore() {
+      this.loading = false
+      this.error = null
+      console.log('Store reseteado')
     }
   }
 })

@@ -37,8 +37,9 @@
   /* Modifier: button--primary (primary button style) */
   .button--primary {
     @apply px-6 py-3 bg-odoo-purple text-white rounded-lg 
-           transition-all duration-300 hover:bg-odoo-dark 
-           hover:shadow-lg hover:shadow-odoo-purple/50;
+           transition-all duration-300 hover:bg-odoo-dark
+           hover:shadow-lg hover:shadow-odoo-purple/50
+           hover:scale-105 active:scale-95 active:shadow-md;
   }
   
   /* Mejoras de accesibilidad */

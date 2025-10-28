@@ -189,9 +189,17 @@ export default {
     console.log('ProjectDetail creada para proyecto:', this.id)
   },
   computed: {
+    /**
+     * ESTADO INTERNO: Store de proyectos
+     * @returns {Object} Store de Pinia con proyectos
+     */
     store() {
       return useProjectsStore()
     },
+    /**
+     * ESTADO INTERNO: Proyecto actual basado en el ID de la ruta
+     * @returns {Object|undefined} Proyecto encontrado o undefined
+     */
     project() {
       // Destructuring para obtener el ID
       const { id } = this
@@ -199,14 +207,32 @@ export default {
     },
     /**
      * Genera los breadcrumbs dinámicamente basado en el proyecto actual
+     * ESTADO INTERNO: Computed property para navegación
      * @returns {Array} Array de objetos breadcrumb con path y label
      */
     breadcrumbItems() {
+      const { project } = this
       return [
         { path: '/', label: 'Inicio' },
         { path: '/projects', label: 'Proyectos' },
-        { path: `/project/${this.id}`, label: this.project?.title || 'Detalle' }
+        { path: `/project/${this.id}`, label: project?.title || 'Detalle' }
       ]
+    },
+    /**
+     * ESTADO INTERNO: Verifica si el proyecto tiene detalles adicionales
+     * @returns {boolean} True si tiene detalles
+     */
+    hasProjectDetails() {
+      const { project } = this
+      return project?.details && Object.keys(project.details).length > 0
+    },
+    /**
+     * ESTADO INTERNO: Lista de tecnologías del proyecto como array
+     * @returns {Array<string>} Lista de tecnologías
+     */
+    projectTechnologies() {
+      const { project } = this
+      return project?.technologies || []
     }
   },
   mounted() {

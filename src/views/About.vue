@@ -208,6 +208,7 @@ export default {
   },
   data() {
     return {
+      /** @type {Array<Object>} */
       skills: [
         {
           category: 'Backend',
@@ -230,6 +231,35 @@ export default {
           technologies: ['Agile', 'Scrum', 'Kanban', 'CI/CD', 'DevOps']
         }
       ]
+    }
+  },
+  computed: {
+    /**
+     * Cuenta total de tecnologías en todas las categorías
+     * ESTADO INTERNO: Computed property para estado derivado
+     * @returns {number} Total de tecnologías
+     */
+    totalTechnologiesCount() {
+      return this.skills.reduce((total, skill) => total + skill.technologies.length, 0)
+    },
+    /**
+     * Obtiene todas las tecnologías como array plano
+     * ESTADO INTERNO: Computed property para transformar datos
+     * @returns {Array<string>} Array de todas las tecnologías
+     */
+    allTechnologies() {
+      return this.skills.flatMap(skill => skill.technologies)
+    },
+    /**
+     * Agrupa tecnologías por categoría en un objeto
+     * ESTADO INTERNO: Computed property para transformar estructura
+     * @returns {Object} Objeto con categorías como keys y tecnologías como values
+     */
+    technologiesByCategory() {
+      return this.skills.reduce((acc, skill) => {
+        const { category, technologies } = skill
+        return { ...acc, [category]: technologies }
+      }, {})
     }
   },
   created() {

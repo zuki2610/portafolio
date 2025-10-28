@@ -85,17 +85,30 @@ export default {
   methods: {
     /**
      * Emite evento de selección de proyecto y navega
+     * Usa destructuring y ES6+ features
      */
     navigateToProject() {
-      // Destructuring del proyecto
-      const { id, title } = this.project
+      // Destructuring avanzado del proyecto con default values (ES6)
+      const { id, title, category, description = 'Sin descripción' } = this.project
       
-      // Emitir evento al componente padre con los datos del proyecto
-      this.$emit('project-selected', this.project)
-      // Navegar a la página de detalle
+      // Spread operator para crear payload completo (ES6)
+      const payload = {
+        id,
+        title,
+        category,
+        description,
+        timestamp: Date.now(),
+        ...this.project // Spread operator
+      }
+      
+      // Emitir evento al componente padre con payload
+      this.$emit('project-selected', payload)
+      
+      // Template literals (ES6) en router
       this.$router.push(`/project/${id}`)
       
-      console.log(`Navegando a proyecto: ${title}`)
+      // Console log con template literals (ES6)
+      console.log(`Navegando a proyecto: ${title} en categoría ${category}`)
     },
     /**
      * Maneja el estado de hover para la animación
@@ -113,6 +126,19 @@ export default {
 .project-card {
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Modifier: project-card--hover (on hover state) */
+.project-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(135, 90, 124, 0.4);
+}
+
+/* Modifier: project-card--active (on active/click state) */
+.project-card:active {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 15px 30px rgba(135, 90, 124, 0.3);
 }
 
 /* Element: project-card__shine (shimmer effect) */
