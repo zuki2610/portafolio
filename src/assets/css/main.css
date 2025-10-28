@@ -17,19 +17,25 @@
 }
 
 @layer components {
-  .card-hover {
+  /* Block: card */
+  /* Modifier: card--hover (interactive card) */
+  .card--hover {
     @apply transition-all duration-300 ease-in-out;
   }
   
-  .card-hover:hover {
+  .card--hover:hover {
     @apply transform scale-105 shadow-2xl;
   }
   
-  .text-gradient {
+  /* Block: text */
+  /* Modifier: text--gradient (gradient text effect) */
+  .text--gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-odoo-purple via-odoo-light to-odoo-dark;
   }
   
-  .button-primary {
+  /* Block: button */
+  /* Modifier: button--primary (primary button style) */
+  .button--primary {
     @apply px-6 py-3 bg-odoo-purple text-white rounded-lg 
            transition-all duration-300 hover:bg-odoo-dark 
            hover:shadow-lg hover:shadow-odoo-purple/50;
@@ -47,22 +53,52 @@
   select:focus-visible {
     @apply ring-2 ring-odoo-purple ring-offset-2 ring-offset-gray-900;
   }
+  
+  /* Skip navigation (screen reader only) */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  .sr-only.focus\:not-sr-only:focus,
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
 }
 
 @layer utilities {
-  .glass-effect {
+  /* Block: glass */
+  /* Modifier: glass--effect (frosted glass effect) */
+  .glass--effect {
     background: rgba(135, 90, 124, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  .neon-glow {
+  /* Block: neon */
+  /* Modifier: neon--glow (neon glow shadow) */
+  .neon--glow {
     box-shadow: 0 0 20px rgba(135, 90, 124, 0.5),
                 0 0 40px rgba(135, 90, 124, 0.3),
                 0 0 60px rgba(135, 90, 124, 0.1);
   }
   
-  .neon-glow:hover {
+  /* Modifier: neon--glow--hover (enhanced glow on hover) */
+  .neon--glow:hover {
     box-shadow: 0 0 30px rgba(135, 90, 124, 0.8),
                 0 0 60px rgba(135, 90, 124, 0.6),
                 0 0 90px rgba(135, 90, 124, 0.4);

@@ -2,15 +2,15 @@
   <div class="about-view">
     <Navbar />
     
-    <section class="pt-32 pb-20 px-4">
+    <section id="main-content" class="pt-32 pb-20 px-4">
       <div class="container mx-auto">
         <div class="max-w-4xl mx-auto">
           <!-- Header -->
           <div class="text-center mb-16 animate-fade-in">
             <h1 class="text-5xl md:text-6xl font-bold mb-6">
-              <span class="text-gradient">Sobre Mí</span>
+              <span class="text--gradient">Sobre Mí</span>
             </h1>
-            <p class="text-xl text-gray-400">
+            <p class="text-xl text-gray-300">
               Desarrolladora Full Stack con pasión por Odoo y Frontend
             </p>
           </div>
@@ -41,42 +41,42 @@
                     <span class="mr-2">📚</span>
                     <div>
                       <strong>Maestria en Desarrollo de Software</strong> - Universidad Bernardo O'Higgins
-                      <p class="text-sm text-gray-400">En curso</p>
+                      <p class="text-sm text-gray-300">En curso</p>
                     </div>
                   </li>
                   <li class="flex items-start">
                     <span class="mr-2">💻</span>
                     <div>
                       <strong>Trainee Frontend - Desarrollo de Software Frontend</strong> - Universidad Andrés Bello
-                      <p class="text-sm text-gray-400">En curso</p>
+                      <p class="text-sm text-gray-300">En curso</p>
                     </div>
                   </li>
                   <li class="flex items-start">
                     <span class="mr-2">🚀</span>
                     <div>
                       <strong>Desarrollador Fullstack</strong> - Desafío LATAM
-                      <p class="text-sm text-gray-400">Completado</p>
+                      <p class="text-sm text-gray-300">Completado</p>
                     </div>
                   </li>
                   <li class="flex items-start">
                     <span class="mr-2">🎓</span>
                     <div>
                       <strong>Diplomado en Ingeniería de Software</strong> - Universidad Andrés Bello (UBO)
-                      <p class="text-sm text-gray-400">Completado</p>
+                      <p class="text-sm text-gray-300">Completado</p>
                     </div>
                   </li>
                   <li class="flex items-start">
                     <span class="mr-2">🎓</span>
                     <div>
                       <strong>Master en Educación, Mención Gerencia</strong> - Universidad Bicentenaria de Aragua (UBA)
-                      <p class="text-sm text-gray-400">Completado</p>
+                      <p class="text-sm text-gray-300">Completado</p>
                     </div>
                   </li>
                   <li class="flex items-start">
                     <span class="mr-2">⚖️</span>
                     <div>
                       <strong>Abogado</strong> - Universidad Bicentenaria de Aragua (UBA)
-                      <p class="text-sm text-gray-400">Completado</p>
+                      <p class="text-sm text-gray-300">Completado</p>
                     </div>
                   </li>
                 </ul>
@@ -157,11 +157,11 @@
           <!-- Skills -->
           <div class="mb-16">
             <h3 class="text-3xl font-bold text-white mb-8 text-center">
-              <span class="text-gradient">Habilidades Técnicas</span>
+              <span class="text--gradient">Habilidades Técnicas</span>
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div v-for="skill in skills" :key="skill.category"
-                   class="glass-effect p-6 rounded-xl card-hover">
+                   class="glass--effect p-6 rounded-xl card--hover">
                 <div class="flex items-center mb-4">
                   <span class="text-3xl mr-4">{{ skill.icon }}</span>
                   <h4 class="text-xl font-bold text-white">{{ skill.category }}</h4>
@@ -180,7 +180,7 @@
           <div class="text-center">
             <router-link 
               to="/contact" 
-              class="button-primary inline-flex items-center text-lg px-8 py-4"
+              class="button--primary inline-flex items-center text-lg px-8 py-4"
             >
               ¡Trabajemos Juntos!
               <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,6 +231,18 @@ export default {
         }
       ]
     }
+  },
+  created() {
+    // Inicializar datos antes de montar
+    console.log('About view creada')
+  },
+  mounted() {
+    // Lógica después de montar
+    console.log('About view montada')
+  },
+  beforeUnmount() {
+    // Limpieza antes de desmontar
+    console.log('About view desmontando')
   }
 }
 </script>

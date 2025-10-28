@@ -3,19 +3,19 @@
     <Navbar />
     
     <!-- Hero Section -->
-    <section class="hero-section pt-32 pb-20 px-4">
+    <section id="main-content" class="hero-section pt-32 pb-20 px-4">
       <div class="container mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div class="text-center md:text-left animate-fade-in">
             <h1 class="text-5xl md:text-7xl font-bold mb-6">
-              <span class="text-gradient">Hola, soy</span>
+              <span class="text--gradient">Hola, soy</span>
               <br>
               <span class="text-white">Isabel Palacios</span>
             </h1>
             <p class="text-xl md:text-2xl text-gray-300 mb-8">
               Especialista en Desarrollo Odoo & Frontend
             </p>
-            <p class="text-lg text-gray-400 mb-8 max-w-2xl">
+            <p class="text-lg text-gray-300 mb-8 max-w-2xl">
               Desarrolladora apasionada por crear soluciones empresariales innovadoras 
               con Odoo y experiencias web modernas. Actualmente trabajo en Konos, 
               especializándome en todas las versiones de Odoo.
@@ -23,7 +23,7 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <router-link 
                 to="/projects" 
-                class="button-primary inline-flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-odoo-purple focus:ring-offset-2 focus:ring-offset-gray-900"
+                class="button--primary inline-flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-odoo-purple focus:ring-offset-2 focus:ring-offset-gray-900"
                 aria-label="Ver todos mis proyectos"
               >
                 Ver Proyectos
@@ -67,22 +67,29 @@
         <h2 class="text-4xl font-bold text-center mb-4">
           <span class="text-gradient">Proyectos Destacados</span>
         </h2>
-        <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+        <p class="text-center text-gray-300 mb-12 max-w-2xl mx-auto">
           Explora algunos de mis trabajos más importantes en desarrollo Odoo y Frontend
         </p>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex justify-center py-20">
+          <LoadingSpinner size="lg" message="Cargando proyectos destacados..." />
+        </div>
+        
+        <!-- Featured Projects Grid -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <ProjectCard 
             v-for="project in featuredProjects" 
             :key="project.id" 
             :project="project"
+            @project-selected="handleProjectSelection"
           />
         </div>
         
         <div class="text-center mt-12">
           <router-link 
             to="/projects" 
-            class="button-primary inline-flex items-center"
+            class="button--primary inline-flex items-center"
           >
             Ver todos los proyectos
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,6 +108,7 @@
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
 import ProjectCard from '../components/ProjectCard.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 import { useProjectsStore } from '../stores/projects.js'
 
 export default {
@@ -108,7 +116,8 @@ export default {
   components: {
     Navbar,
     Footer,
-    ProjectCard
+    ProjectCard,
+    LoadingSpinner
   },
   data() {
     return {
@@ -123,9 +132,37 @@ export default {
     }
   },
   computed: {
+    isLoading() {
+      const store = useProjectsStore()
+      return store.loading
+    },
     featuredProjects() {
       const store = useProjectsStore()
       return store.getFeaturedProjects
+    }
+  },
+  created() {
+    // Inicializar datos antes de montar
+    // Destructuring para obtener tecnologías
+    const { featuredTechnologies } = this
+    console.log('Home view creada con', featuredTechnologies.length, 'tecnologías destacadas')
+  },
+  mounted() {
+    // Lógica después de montar
+    console.log('Home view montada')
+  },
+  beforeUnmount() {
+    // Limpieza antes de desmontar
+    console.log('Home view desmontando')
+  },
+  methods: {
+    /**
+     * Maneja la selección de un proyecto destacado
+     * @param {Object} project - Proyecto seleccionado
+     */
+    handleProjectSelection(project) {
+      console.log('Proyecto destacado seleccionado:', project.title)
+      // Aquí puedes agregar tracking, analytics, etc.
     }
   }
 }

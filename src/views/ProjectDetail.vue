@@ -2,14 +2,18 @@
   <div class="project-detail-view">
     <Navbar />
     
-    <section class="pt-32 pb-20 px-4" v-if="project">
+    <section id="main-content" class="pt-32 pb-20 px-4" v-if="project">
       <div class="container mx-auto max-w-6xl">
+        <!-- Breadcrumbs -->
+        <Breadcrumbs :items="breadcrumbItems" class="mb-8" />
+        
         <!-- Back Button -->
         <router-link 
           to="/projects" 
-          class="inline-flex items-center text-odoo-light hover:text-white mb-8 transition-colors"
+          class="inline-flex items-center text-odoo-light hover:text-white mb-8 transition-colors focus:outline-none focus:ring-2 focus:ring-odoo-purple focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1"
+          aria-label="Volver a la lista de proyectos"
         >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
           Volver a Proyectos
@@ -23,7 +27,7 @@
             </div>
             <div>
               <h1 class="text-4xl font-bold text-white mb-2">{{ project.title }}</h1>
-              <p class="text-xl text-gray-400">{{ project.category }}</p>
+              <p class="text-xl text-gray-300">{{ project.category }}</p>
             </div>
           </div>
           
@@ -39,7 +43,7 @@
             </span>
           </div>
           
-          <div class="flex items-center text-gray-400">
+          <div class="flex items-center text-gray-300">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
@@ -104,15 +108,15 @@
             </h3>
             <div class="space-y-4">
               <div v-if="project.details.client">
-                <p class="text-sm text-gray-400 mb-1">Cliente</p>
+                <p class="text-sm text-gray-300 mb-1">Cliente</p>
                 <p class="text-white font-semibold">{{ project.details.client }}</p>
               </div>
               <div v-if="project.details.duration">
-                <p class="text-sm text-gray-400 mb-1">Duración</p>
+                <p class="text-sm text-gray-300 mb-1">Duración</p>
                 <p class="text-white font-semibold">{{ project.details.duration }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-400 mb-1">Tecnologías Utilizadas</p>
+                <p class="text-sm text-gray-300 mb-1">Tecnologías Utilizadas</p>
                 <div class="flex flex-wrap gap-2 mt-2">
                   <span 
                     v-for="tech in project.details.technologies" 
@@ -134,7 +138,7 @@
             :href="project.link" 
             target="_blank"
             rel="noopener"
-            class="button-primary inline-flex items-center justify-center"
+            class="button--primary inline-flex items-center justify-center"
           >
             Ver Código
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,9 +157,8 @@
     </section>
     
     <!-- Loading State -->
-    <div v-else class="pt-32 pb-20 text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-odoo-purple mx-auto"></div>
-      <p class="mt-4 text-gray-400">Cargando proyecto...</p>
+    <div v-else class="pt-32 pb-20">
+      <LoadingSpinner size="lg" message="Cargando proyecto..." />
     </div>
     
     <Footer />
@@ -165,13 +168,15 @@
 <script>
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
+import Breadcrumbs from '../components/Breadcrumbs.vue'
 import { useProjectsStore } from '../stores/projects.js'
 
 export default {
   name: 'ProjectDetail',
   components: {
     Navbar,
-    Footer
+    Footer,
+    Breadcrumbs
   },
   props: {
     id: {
@@ -179,19 +184,45 @@ export default {
       required: true
     }
   },
+  created() {
+    // Inicializar datos antes de montar
+    console.log('ProjectDetail creada para proyecto:', this.id)
+  },
   computed: {
     store() {
       return useProjectsStore()
     },
     project() {
-      return this.store.getProjectById(this.id)
+      // Destructuring para obtener el ID
+      const { id } = this
+      return this.store.getProjectById(id)
+    },
+    /**
+     * Genera los breadcrumbs dinámicamente basado en el proyecto actual
+     * @returns {Array} Array de objetos breadcrumb con path y label
+     */
+    breadcrumbItems() {
+      return [
+        { path: '/', label: 'Inicio' },
+        { path: '/projects', label: 'Proyectos' },
+        { path: `/project/${this.id}`, label: this.project?.title || 'Detalle' }
+      ]
     }
   },
   mounted() {
-    // Verificar que el proyecto existe
-    if (!this.project) {
+    // Destructuring para verificar si el proyecto existe
+    const { project } = this
+    
+    // Verificar que el proyecto existe después de montar
+    if (!project) {
+      console.warn(`Proyecto con ID ${this.id} no encontrado`)
       this.$router.push('/projects')
     }
+    console.log('ProjectDetail montada')
+  },
+  beforeUnmount() {
+    // Limpieza antes de desmontar
+    console.log('ProjectDetail desmontando')
   }
 }
 </script>

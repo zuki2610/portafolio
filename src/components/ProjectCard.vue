@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="card-hover neon-glow p-6 rounded-xl glass-effect cursor-pointer"
+    class="project-card neon-glow p-6 rounded-xl glass-effect cursor-pointer"
     @click="navigateToProject"
     @mouseenter="handleHover(true)"
     @mouseleave="handleHover(false)"
@@ -58,10 +58,24 @@ export default {
       required: true
     }
   },
+  emits: ['project-selected'],
   data() {
     return {
       isAnimated: false
     }
+  },
+  created() {
+    // Inicializar estado antes de montar el componente
+    console.log('ProjectCard creado para:', this.project?.title)
+  },
+  mounted() {
+    // Lógica después de montar
+    console.log('ProjectCard montado')
+  },
+  beforeUnmount() {
+    // Limpieza antes de desmontar
+    this.isAnimated = false
+    console.log('ProjectCard desmontando')
   },
   computed: {
     icon() {
@@ -69,9 +83,24 @@ export default {
     }
   },
   methods: {
+    /**
+     * Emite evento de selección de proyecto y navega
+     */
     navigateToProject() {
-      this.$router.push(`/project/${this.project.id}`)
+      // Destructuring del proyecto
+      const { id, title } = this.project
+      
+      // Emitir evento al componente padre con los datos del proyecto
+      this.$emit('project-selected', this.project)
+      // Navegar a la página de detalle
+      this.$router.push(`/project/${id}`)
+      
+      console.log(`Navegando a proyecto: ${title}`)
     },
+    /**
+     * Maneja el estado de hover para la animación
+     * @param {boolean} isHovering - Estado de hover (true/false)
+     */
     handleHover(isHovering) {
       this.isAnimated = isHovering
     }
@@ -80,12 +109,14 @@ export default {
 </script>
 
 <style scoped>
-.card-hover {
+/* Block: project-card */
+.project-card {
   position: relative;
   overflow: hidden;
 }
 
-.card-hover::before {
+/* Element: project-card__shine (shimmer effect) */
+.project-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -96,7 +127,8 @@ export default {
   transition: left 0.5s;
 }
 
-.card-hover:hover::before {
+/* Modifier: project-card--hover (on hover state) */
+.project-card:hover::before {
   left: 100%;
 }
 </style>

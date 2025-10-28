@@ -766,22 +766,52 @@ export const useProjectsStore = defineStore('projects', {
   }),
   
   getters: {
+    /**
+     * Obtiene todos los proyectos almacenados
+     * @returns {Array} Array completo de proyectos
+     */
     getAllProjects: (state) => state.projects,
     
-    getFeaturedProjects: (state) => state.projects.filter(project => project.featured),
+    /**
+     * Obtiene solo los proyectos destacados (featured)
+     * @returns {Array} Proyectos con featured: true
+     */
+    getFeaturedProjects: (state) => {
+      return state.projects.filter(project => project.featured)
+    },
     
+    /**
+     * Busca un proyecto por su ID
+     * @param {string} id - ID del proyecto
+     * @returns {Object|undefined} Proyecto encontrado o undefined
+     */
     getProjectById: (state) => {
       return (id) => state.projects.find(project => project.id === id)
     },
     
+    /**
+     * Obtiene proyectos por categoría
+     * @param {string} category - Categoría a filtrar
+     * @returns {Array} Proyectos de la categoría especificada
+     */
     getProjectsByCategory: (state) => {
       return (category) => state.projects.filter(project => project.category === category)
     }
   },
   
   actions: {
-    // Cargar proyectos desde la API
+    /**
+     * Carga proyectos desde la API externa
+     * Si falla, mantiene los datos locales como fallback
+     * Implementa error handling robusto con diferentes tipos de errores
+     */
     async loadProjects() {
+      // Si ya está cargando, evitar llamadas duplicadas
+      if (this.loading) {
+        console.log('Ya existe una carga en progreso')
+        return
+      }
+      
       this.loading = true
       this.error = null
       
@@ -789,45 +819,121 @@ export const useProjectsStore = defineStore('projects', {
         // Intentar cargar desde la API
         const projects = await fetchProjects()
         
-        // Si la API no tiene datos o está vacía, no sobrescribir los datos locales
-        if (projects && projects.length > 0) {
-          this.projects = projects
-          console.log('Proyectos cargados exitosamente desde la API')
-        } else {
-          console.log('API retornó vacío, usando datos locales')
-          // Mantener los datos locales que ya están en el state inicial
+        // Validación robusta de la respuesta
+        if (!projects) {
+          throw new Error('La API no retornó datos')
         }
-      } catch (error) {
-        console.warn('Error al cargar proyectos desde API, usando datos locales:', error)
-        // Manejo user-friendly del error
-        this.error = error.message || 'Error al cargar proyectos desde el servidor'
         
-        // Si hay un error de red, no actualizar el estado
-        if (error.message?.includes('fetch')) {
-          console.log('Error de red detectado, usando datos locales')
-          this.error = null // No mostrar error si es problema de red
+        // Verificar si es un array válido
+        if (!Array.isArray(projects)) {
+          throw new Error('La API retornó un formato de datos inválido')
         }
+        
+        // Si la API no tiene datos o está vacía, mantener datos locales
+        if (projects.length === 0) {
+          console.log('API retornó array vacío, usando datos locales')
+          return
+        }
+        
+        // Validar estructura de datos
+        const validProjects = projects.filter(project => {
+          return project && 
+                 project.id && 
+                 project.title && 
+                 project.description &&
+                 Array.isArray(project.technologies)
+        })
+        
+        if (validProjects.length === 0) {
+          console.warn('API retornó datos sin estructura válida')
+          this.error = 'La API retornó datos con formato incorrecto'
+          return
+        }
+        
+        // Actualizar con datos de la API solo si son válidos
+        this.projects = validProjects
+        console.log(`Proyectos cargados exitosamente desde la API (${validProjects.length} proyectos)`)
+        
+      } catch (error) {
+        console.error('Error al cargar proyectos desde API:', error)
+        
+        // Manejo específico de diferentes tipos de errores
+        if (error.name === 'TypeError') {
+          this.error = 'Error de conexión con el servidor'
+        } else if (error.status === 404) {
+          this.error = 'Endpoint de API no encontrado'
+        } else if (error.status === 500) {
+          this.error = 'Error interno del servidor'
+        } else if (error.message?.includes('fetch')) {
+          this.error = 'Error de red. No se pudo conectar al servidor'
+        } else {
+          this.error = error.message || 'Error desconocido al cargar proyectos'
+        }
+        
+        // En caso de error, mantener los datos locales existentes
+        console.log('Usando datos locales como fallback debido a error en API')
       } finally {
         this.loading = false
       }
     },
     
-    // Cargar un proyecto específico desde la API
+    /**
+     * Carga un proyecto específico por ID desde la API
+     * @param {string} id - ID del proyecto a cargar
+     * @returns {Object|null} Proyecto encontrado o null
+     */
     async loadProjectById(id) {
+      if (!id) {
+        console.error('loadProjectById: ID no proporcionado')
+        return null
+      }
+      
       try {
         const project = await fetchProjectById(id)
-        if (project) {
-          return project
-        } else {
-          // Fallback a datos locales si la API no responde
+        
+        // Validar que el proyecto existe y tiene estructura válida
+        if (!project) {
           console.log('Proyecto no encontrado en API, buscando en datos locales')
           return this.getProjectById(id)
         }
+        
+        // Validar estructura del proyecto
+        if (!project.id || !project.title) {
+          console.warn('Proyecto de API tiene estructura inválida')
+          return this.getProjectById(id)
+        }
+        
+        return project
+        
       } catch (error) {
         console.error('Error al cargar proyecto específico:', error)
+        
         // Fallback a datos locales
-        return this.getProjectById(id)
+        const localProject = this.getProjectById(id)
+        if (localProject) {
+          console.log('Retornando proyecto desde datos locales')
+          return localProject
+        }
+        
+        // Si no existe en datos locales tampoco
+        this.error = `No se pudo cargar el proyecto con ID: ${id}`
+        return null
       }
+    },
+    
+    /**
+     * Resetea el estado de error del store
+     */
+    clearError() {
+      this.error = null
+    },
+    
+    /**
+     * Fuerza recarga de proyectos desde la API
+     */
+    async refreshProjects() {
+      console.log('Refrescando proyectos desde la API...')
+      await this.loadProjects()
     }
   }
 })

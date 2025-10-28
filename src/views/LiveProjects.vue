@@ -7,15 +7,15 @@
         <!-- Header -->
         <div class="text-center mb-16 animate-fade-in">
           <h1 class="text-5xl md:text-6xl font-bold mb-6">
-            <span class="text-gradient">Proyectos en Vivo</span>
+            <span class="text--gradient">Proyectos en Vivo</span>
           </h1>
-          <p class="text-xl text-gray-400">
+          <p class="text-xl text-gray-300">
             Mis proyectos desplegados y funcionando
           </p>
         </div>
         
         <!-- Desktop Grid - 4 Secciones -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div v-if="!isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div 
             v-for="live in liveProjects" 
             :key="live.id"
@@ -77,7 +77,7 @@
             <!-- Project Info -->
             <div class="mt-6 text-center">
               <h3 class="text-2xl font-bold text-white mb-2">{{ live.title }}</h3>
-              <p class="text-gray-400 mb-4">{{ live.technologies.join(' • ') }}</p>
+              <p class="text-gray-300 mb-4">{{ live.technologies.join(' • ') }}</p>
               <button 
                 @click.stop="openProject(live.url)"
                 class="bg-odoo-purple hover:bg-odoo-dark text-white px-6 py-3 rounded-lg transition-all duration-300 inline-flex items-center"
@@ -90,6 +90,11 @@
             </div>
           </div>
         </div>
+        
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex justify-center py-20">
+          <LoadingSpinner size="lg" message="Cargando proyectos en vivo..." />
+        </div>
       </div>
     </section>
     
@@ -100,6 +105,7 @@
 <script>
 import Navbar from '../components/Navbar.vue'
 import Footer from '../components/Footer.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 import starkImg from '../assets/img/stark.jpg'
 import pikapikaImg from '../assets/img/pikapika.jpg'
 import vuestaurantImg from '../assets/img/vuestaurant.jpg'
@@ -109,10 +115,12 @@ export default {
   name: 'LiveProjects',
   components: {
     Navbar,
-    Footer
+    Footer,
+    LoadingSpinner
   },
   data() {
     return {
+      isLoading: false,
       liveProjects: [
         {
           id: 'stark-industech',
@@ -157,7 +165,29 @@ export default {
       ]
     }
   },
+  created() {
+    console.log('LiveProjects view creada')
+  },
+  mounted() {
+    // Simular carga de datos
+    this.loadProjects()
+  },
+  beforeUnmount() {
+    console.log('LiveProjects view desmontando')
+  },
   methods: {
+    /**
+     * Carga proyectos en vivo (simulado)
+     */
+    async loadProjects() {
+      this.isLoading = true
+      
+      // Simular delay de carga
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      this.isLoading = false
+      console.log('Proyectos en vivo cargados')
+    },
     openProject(url) {
       window.open(url, '_blank', 'noopener,noreferrer')
     }

@@ -1,9 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import About from '../views/About.vue'
-import Projects from '../views/Projects.vue'
-import Contact from '../views/Contact.vue'
-import ProjectDetail from '../views/ProjectDetail.vue'
+
+// Lazy loading para optimización de performance
+const Home = () => import('../views/Home.vue')
+const About = () => import('../views/About.vue')
+const Projects = () => import('../views/Projects.vue')
+const Contact = () => import('../views/Contact.vue')
+const ProjectDetail = () => import('../views/ProjectDetail.vue')
+const Admin = () => import('../views/Admin.vue')
+const AdminUsers = () => import('../views/AdminUsers.vue')
+const AdminProjects = () => import('../views/AdminProjects.vue')
+const LiveProjects = () => import('../views/LiveProjects.vue')
 
 const routes = [
   {
@@ -35,7 +41,26 @@ const routes = [
   {
     path: '/live',
     name: 'LiveProjects',
-    component: () => import('../views/LiveProjects.vue')
+    component: LiveProjects
+  },
+  // Ruta de administración con rutas anidadas (jerárquicas)
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin,
+    redirect: '/admin/users',
+    children: [
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: AdminUsers
+      },
+      {
+        path: 'projects',
+        name: 'AdminProjects',
+        component: AdminProjects
+      }
+    ]
   },
   // Ruta por defecto - redirige a Home
   {

@@ -1,8 +1,8 @@
 <template>
-  <nav class="fixed top-0 w-full z-50 glass-effect">
+  <nav class="fixed top-0 w-full z-50 glass--effect" role="navigation" aria-label="Navegación principal">
     <div class="container mx-auto px-4 py-4">
       <div class="flex justify-between items-center">
-        <router-link to="/" class="text-2xl font-bold text-gradient" aria-label="Ir a inicio">
+        <router-link to="/" class="text-2xl font-bold text--gradient" aria-label="Ir a inicio">
           Isabel Palacios
         </router-link>
         
@@ -21,8 +21,8 @@
           <li v-for="item in menuItems" :key="item.name">
             <router-link 
               :to="item.path" 
-              class="nav-link"
-              active-class="text-odoo-light"
+              class="navbar__link"
+              active-class="navbar__link--active text-odoo-light"
               :aria-label="`Navegar a ${item.name}`"
             >
               {{ item.name }}
@@ -38,7 +38,7 @@
             <router-link 
               :to="item.path" 
               @click="closeMenu"
-              class="block py-2 text-white hover:text-odoo-light"
+              class="navbar__link navbar__link--mobile block py-2 text-white hover:text-odoo-light"
               :aria-label="`Navegar a ${item.name}`"
             >
               {{ item.name }}
@@ -65,6 +65,21 @@ export default {
       ]
     }
   },
+  created() {
+    // Inicializar estado antes de montar el componente
+    console.log('Navbar creado')
+  },
+  mounted() {
+    // Configuraciones después de montar el componente
+    // Cerrar menú móvil si está abierto
+    if (this.isMenuOpen) {
+      this.closeMenu()
+    }
+  },
+  beforeUnmount() {
+    // Limpieza antes de desmontar el componente
+    this.isMenuOpen = false
+  },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen
@@ -82,17 +97,21 @@ export default {
 </script>
 
 <style scoped>
-.nav-link {
+/* Block: navbar */
+/* Element: navbar__link */
+.navbar__link {
   color: #ffffff;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
-.nav-link:hover {
+/* Modifier: navbar__link--hover (on hover state) */
+.navbar__link:hover {
   color: #A6839F;
 }
 
-.nav-link.router-link-active {
+/* Modifier: navbar__link--active (active route) */
+.navbar__link.navbar__link--active {
   color: #A6839F;
   font-weight: 600;
 }
